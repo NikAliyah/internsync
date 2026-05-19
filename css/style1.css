@@ -1,0 +1,50 @@
+:root{
+    --pink:#e91e8c;
+    --pink-light:rgba(233,30,140,0.15);
+}
+
+.navbar-brand{
+    font-weight:700;
+    font-size:1.4rem;
+    color:var(--pink)!important;
+}
+
+.page-title{
+    font-weight:700;
+}
+
+.dashboard-card{
+    background-color:#CC3586;
+    transition:0.2s;
+}
+
+.dashboard-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 0 15px var(--pink);
+    background:var(--pink-light);
+}
+
+.stat-number{
+    font-size:2rem;
+    font-weight:700;
+}
+
+.chart-card{
+    border:2px solid var(--pink);
+    border-radius:12px;
+    max-width:1000px;
+    margin:auto;
+}
+
+.dark-mode-toggle{
+    background:none;
+    border:2px solid var(--pink);
+    border-radius:8px;
+    padding:6px 10px;
+    color:var(--pink);
+}
+
+.dark-mode-toggle:hover{
+    background:var(--pink);
+    color:white;
+}

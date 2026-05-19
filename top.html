@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Internship Place</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+     <!--Bookstrap Icon-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!--Google Font API-->
+    <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+     <!--Custom css-->
+    <link rel="stylesheet" href="css/style3.css">
+
+</head>
+
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container">
+        <a class="navbar-brand" href="dashboard.html">Home</a>
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="total.html"> List of Internship Place</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle"
+                       href="#"
+                       data-bs-toggle="dropdown">See More</a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="rating.html">Internship Rating</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="top.html">Top Internship Place</a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item style=background-color:red;" href="index.html" style=color:red;> Log Out </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <button class="dark-mode-toggle" id="darkModeToggle">
+                <i class="bi bi-moon-stars-fill"
+                   id="darkModeIcon"></i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-4">
+
+    <h3 class="page-title mb-1">
+        <i class="bi bi-trophy-fill me-2"
+           style="color:hotpink"></i>Top Internship Place
+    </h3>
+
+    <p class="text-muted mb-4">
+        Internship Place Ranking Based on Your Rating!</p>
+
+    <!-- Empty -->
+    <div id="emptyState"
+         class="text-center empty-state d-none">
+
+        <i class="bi bi-bar-chart-fill"
+           style="font-size:2.5rem;
+                  color:var(--pink);
+                  display:block;
+                  margin-bottom:10px;"></i>
+        <p>
+            <br>
+            <a href="rating.html"
+               style="color:var(--pink)">
+            </a>
+        </p>
+    </div>
+
+    <!-- Content -->
+    <div id="mainContent">
+        <div class="row g-4">
+
+            <!-- Horizontal Bar -->
+            <div class="col-12 col-lg-7">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <i class="bi bi-list-stars me-2"></i> Internship Place Rating</div>
+                    <div class="chart-body">
+                        <canvas id="top5Chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leader Board -->
+            <div class="col-12 col-lg-5">
+                <div class="chart-card">
+
+                    <div class="chart-header">
+                        <i class="bi bi-trophy-fill me-2"></i> Leaderboard </div>
+
+                    <div class="chart-body"
+                         id="leaderboard">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="text-center p-3 mt-5 bg-secondary text-white"><i class="bi bi-c-circle"></i> 2026 Internship Tracker | Aliyah</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+function getInternList(){
+    return JSON.parse(localStorage.getItem('internList') || '[]');
+}
+
+function getRatings(){
+    return JSON.parse(localStorage.getItem('internRatings') || '{}');
+}
+
+function starsText(rating){
+    const filled = '★'.repeat(rating);
+    const empty  = '☆'.repeat(5 - rating);
+    return `
+        <span class="stars-display">${filled}</span>
+        <span class="stars-empty">${empty}</span>
+    `;
+}
+
+function truncate(str, n){
+    return str.length > n
+        ? str.slice(0, n) + '...'
+        : str;
+}
+
+function escHtml(str){
+    return str
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;');
+}
+
+function buildCharts(){
+    const list = getInternList()
+        .filter(d => d.status === 'Accepted');
+    const ratings = getRatings();
+    const rated = list
+        .filter(d => ratings[d.id] !== undefined)
+        .map(d => ({
+            title: d.title,
+            rating: ratings[d.id]
+        }))
+        .sort((a,b) => b.rating - a.rating);
+    if(rated.length === 0){
+        document.getElementById('emptyState')
+            .classList.remove('d-none');
+
+        document.getElementById('mainContent')
+            .classList.add('d-none');
+        return;
+    }
+
+    document.getElementById('emptyState')
+        .classList.add('d-none');
+    document.getElementById('mainContent')
+        .classList.remove('d-none');
+    const isDark =
+        document.documentElement
+        .getAttribute('data-bs-theme') === 'dark';
+    const textCol = isDark
+        ? '#e0e0e0'
+        : '#333';
+    const gridCol = isDark
+        ? 'rgba(255,255,255,0.1)'
+        : 'rgba(0,0,0,0.08)';
+
+    // Horizontal Bar
+    const ctx =
+        document.getElementById('top5Chart')
+        .getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: rated.map(d =>
+                truncate(d.title, 20)
+            ),
+            datasets: [{
+                label: 'Rating',
+                data: rated.map(d => d.rating),
+                backgroundColor: [
+                    '#ffd700cc',
+                    '#c0c0c0cc',
+                    '#cd7f32cc',
+                    '#e91e8ccc',
+                    '#ff6b6bcc'
+                ],
+                borderColor: [
+                    '#ffd700',
+                    '#c0c0c0',
+                    '#cd7f32',
+                    '#e91e8c',
+                    '#ff6b6b'
+                ],
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            scales: {
+                x: {
+                    min: 0,
+                    max: 5,
+                    ticks: {
+                        stepSize: 1,
+                        color: textCol
+                    },
+                    grid: {
+                        color: gridCol
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: textCol
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: ctx =>
+                            ` ${'★'.repeat(ctx.raw)} (${ctx.raw}/5)`
+                    }
+                }
+            }
+        }
+    });
+
+    // Leader Board
+    const lb = document.getElementById('leaderboard');
+    lb.innerHTML = rated.map((d,i) => {
+        const rankClass =
+            i === 0 ? 'rank-1' :
+            i === 1 ? 'rank-2' :
+            i === 2 ? 'rank-3' :
+            'rank-other';
+        const medal =
+            i === 0 ? '🥇' :
+            i === 1 ? '🥈' :
+            i === 2 ? '🥉' :
+            i + 1;
+        return `
+            <div class="leaderboard-item">
+                <div class="rank-badge ${rankClass}">
+                    ${medal}
+                </div>
+                <div class="flex-grow-1">
+                    <div class="fw-semibold"
+                         style="font-size:0.97rem;">
+                        ${escHtml(d.title)}
+                    </div>
+                    <div>
+                        ${starsText(d.rating)}
+                        <span class="text-muted small">
+                            (${d.rating}/5)
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `;
+
+    }).join('');
+}
+buildCharts();
+</script>
+
+<!-- Dark Mode Toggle -->
+<script>
+    const darkModeToggle =
+        document.getElementById('darkModeToggle');
+    const darkModeIcon =
+        document.getElementById('darkModeIcon');
+    const htmlEl =
+        document.documentElement;
+    const savedTheme =
+        localStorage.getItem('theme') || 'light';
+    htmlEl.setAttribute('data-bs-theme', savedTheme);
+    updateIcon(savedTheme);
+    darkModeToggle.addEventListener('click', () => {
+        const current =
+            htmlEl.getAttribute('data-bs-theme');
+        const newTheme =
+            current === 'light'
+            ? 'dark'
+            : 'light';
+        htmlEl.setAttribute('data-bs-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateIcon(newTheme);
+});
+
+    function updateIcon(theme){
+        darkModeIcon.className =
+            theme === 'dark'
+            ? 'bi bi-sun-fill'
+            : 'bi bi-moon-stars-fill';
+    }
+</script>
+
+</body>
+</html>

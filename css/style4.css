@@ -1,0 +1,127 @@
+:root {
+    --pink: #e91e8c;
+    --pink-light: rgba(233,30,140,0.15);
+}
+
+.navbar-brand { 
+    font-weight: 700; 
+    font-size: 1.4rem; 
+    color: var(--pink) !important; 
+    letter-spacing: 1px; 
+}
+
+.page-title { 
+    font-weight: 700; 
+    font-size: 1.6rem; 
+}
+
+.filter-tabs .btn {
+    border: 2px solid var(--pink);
+    color: var(--pink);
+    border-radius: 8px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.filter-tabs .btn.active,
+.filter-tabs .btn:hover {
+    background: var(--pink);
+    color: white;
+}
+
+.drama-table {
+    border: 2px solid var(--pink);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.drama-table thead th {
+    background: var(--pink);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+}
+
+.drama-table tbody tr {
+    transition: background 0.15s;
+}
+
+.drama-table tbody tr:hover {
+    background: var(--pink-light) !important;
+}
+
+.drama-table td {
+    vertical-align: middle;
+    font-size: 0.97rem;
+}
+
+.btn-edit {
+    border: 1.5px solid var(--pink); 
+    color: var(--pink);
+    background: none; 
+    border-radius: 6px; 
+    padding: 3px 10px;
+    font-size: 0.85rem; 
+    transition: 0.2s;
+}
+
+.btn-edit:hover { 
+    background: var(--pink); 
+    color: white; 
+}
+
+.btn-del {
+    border: 1.5px solid #dc3545; 
+    color: #dc3545;
+    background: none; 
+    border-radius: 6px; 
+    padding: 3px 10px;
+    font-size: 0.85rem; 
+    transition: 0.2s;
+}
+
+.btn-del:hover {
+    background: #dc3545; 
+    color: white;
+}
+
+.search-box {
+    border: 2px solid var(--pink);
+    border-radius: 8px;
+}
+.search-box:focus { 
+    box-shadow: 0 0 0 0.2rem var(--pink-light); 
+    border-color: var(--pink); 
+}
+
+.empty-state { 
+    color: #aaa; 
+    padding: 2.5rem 0; 
+}
+
+.dark-mode-toggle {
+    background: none; 
+    border: 2px solid var(--pink);
+    border-radius: 8px; 
+    padding: 6px 10px; 
+    color: var(--pink);
+    cursor: pointer; 
+    transition: 0.2s;
+}
+
+.dark-mode-toggle:hover { 
+    background: var(--pink); 
+    color: white; 
+}
+
+.modal-header { 
+    border-bottom: 2px solid var(--pink); 
+}
+
+.modal-footer { 
+    border-top: 2px solid var(--pink);
+}
+
+footer { 
+    background: #2a2a2a !important; 
+}

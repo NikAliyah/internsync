@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Internship Place</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+     <!--Bookstrap Icon-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!--Google Font API-->
+    <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+     <!--Custom css-->
+    <link rel="stylesheet" href="css/style4.css">
+
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container">
+        <a class="navbar-brand" href="dashboard.html">Home</a>
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="total.html"> List of Internship Place</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle"
+                       href="#"
+                       data-bs-toggle="dropdown">See More</a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="rating.html">Internship Rating</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="top.html">Top Internship Place</a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item style=background-color:red;" href="index.html" style=color:red;> Log Out </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <button class="dark-mode-toggle" id="darkModeToggle">
+                <i class="bi bi-moon-stars-fill"
+                   id="darkModeIcon"></i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+    <div class="container py-4">
+
+         <!-- Page Title -->
+        <h3 class="page-title mb-1"><i class="bi bi-card-checklist me-2" style="color:hotpink"></i>List of Internship Place</h3>
+        <p class="text-muted mb-4">Internship Place List!</p>
+
+         <!-- Search and Filter -->
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+            <input type="text" id="searchInput" class="form-control search-box"
+                   placeholder=" Search Internship Place..." style="max-width:260px;"
+                   oninput="renderTable()">
+
+            <div class="filter-tabs d-flex gap-2 flex-wrap">
+                <button class="btn active" onclick="setFilter('All', this)">All</button>
+                <button class="btn" onclick="setFilter('Accepted', this)"><i class="bi bi-check-circle-fill" style="color:green;"></i> Accepted</button>
+                <button class="btn" onclick="setFilter('Pending', this)"><i class="bi bi-hourglass-bottom" style="color:orange;"></i> Pending</button>
+                <button class="btn" onclick="setFilter('Rejected', this)"><i class="bi bi-x-circle-fill" style="color:red;"></i> Rejected </button>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="drama-table">
+            <table class="table table-borderless mb-0" id="internTable">
+                <thead>
+                    <tr>
+                        <th style="width:50px">No.</th>
+                        <th>Internship Place</th>
+                        <th style="width:130px">Status</th>
+                        <th style="width:120px" class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="internTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Entry count -->
+        <p class="text-muted small mt-2" id="entryCount"></p>
+
+    </div>
+
+    <!-- Edit -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2" style="color:var(--pink)"></i>Edit Internship</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editId">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">Internship Place</label>
+                        <input type="text" id="editTitle" class="form-control search-box">
+                    </div>
+                    <div class="mb-1">
+                        <label class="form-label fw-semibold small">Status</label>
+                        <select id="editStatus" class="form-select" style="border:2px solid var(--pink);border-radius:8px;">
+                            <option value="Accepted">Accepted</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" style="border:2px solid var(--pink);color:var(--pink);border-radius:8px;" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn" style="background:var(--pink);color:white;border-radius:8px;" onclick="saveEdit()">
+                        <i class="bi bi-check-circle me-1"></i>Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <footer class="text-center p-3 mt-5 bg-secondary text-white"><i class="bi bi-c-circle"></i> 2026 Internship Tracker | Aliyah</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        //localStorage 
+        function getInternList() {
+            return JSON.parse(localStorage.getItem('internList') || '[]');
+        }
+        function saveInternList(list) {
+            localStorage.setItem('internList', JSON.stringify(list));
+        }
+
+        //State
+        let currentFilter = 'All';
+
+        function setFilter(filter, btn) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-tabs .btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderTable();
+        }
+
+        //Render Table 
+        function renderTable() {
+            const list     = getInternList();
+            const search   = document.getElementById('searchInput').value.trim().toLowerCase();
+            const tbody    = document.getElementById('internTableBody');
+            const countEl  = document.getElementById('entryCount');
+
+            let filtered = list.filter(d => {
+                const matchFilter = currentFilter === 'All' || d.status === currentFilter;
+                const matchSearch = d.title.toLowerCase().includes(search);
+                return matchFilter && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center empty-state">
+                            <i class="bi bi-film" style="font-size:2rem;display:block;margin-bottom:8px;color:var(--pink)"></i>
+                            No Internship Place Found.
+                        </td>
+                    </tr>`;
+                countEl.textContent = '';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((d, i) => `
+                <tr>
+                    <td class="text-muted">${i + 1}</td>
+                    <td class="fw-semibold">${escHtml(d.title)}</td>
+                    <td><span class="badge rounded-pill px-3 py-1 ${badgeClass(d.status)}">${d.status}</span></td>
+                    <td class="text-center">
+                        <button class="btn-edit me-1" onclick="openEdit(${d.id})"><i class="bi bi-pencil"></i></button>
+                        <button class="btn-del" onclick="deleteIntern(${d.id})"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`).join('');
+        }
+
+       //Badge class 
+        function badgeClass(status) {
+            if (status === 'Accepted') return 'badge-accepted bg-success';
+            if (status === 'Pending')  return 'badge-pending bg-warning text-dark';
+            return 'badge-rejected bg-danger';
+        }
+
+        //Escape HTML to prevent XSS
+        function escHtml(str) {
+            return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        //Delete
+        function deleteIntern(id) {
+            if (!confirm('Delete this company?')) return;
+            const list = getInternList().filter(d => d.id !== id);
+            saveInternList(list);
+            renderTable();
+        }
+
+        //Edit
+        function openEdit(id) {
+            const intern = getInternList().find(d => d.id === id);
+            if (!intern) return;
+            document.getElementById('editId').value     = id;
+            document.getElementById('editTitle').value  = intern.title;
+            document.getElementById('editStatus').value = intern.status;
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+        }
+
+        function saveEdit() {
+            const id     = parseInt(document.getElementById('editId').value);
+            const title  = document.getElementById('editTitle').value.trim();
+            const status = document.getElementById('editStatus').value;
+
+            if (!title) { alert('Company name cannot be blank!'); return; }
+
+            const list = getInternList().map(d => d.id === id ? { ...d, title, status } : d);
+            saveInternList(list);
+
+            bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+            renderTable();
+        }
+        renderTable();
+    </script>
+
+    <!-- Dark Mode Toggle -->
+    <script>
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon   = document.getElementById('darkModeIcon');
+        const htmlEl         = document.documentElement;
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        htmlEl.setAttribute('data-bs-theme', savedTheme);
+        updateIcon(savedTheme);
+
+        darkModeToggle.addEventListener('click', () => {
+            const current  = htmlEl.getAttribute('data-bs-theme');
+            const newTheme = current === 'light' ? 'dark' : 'light';
+            htmlEl.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateIcon(newTheme);
+        });
+
+        function updateIcon(theme) {
+            darkModeIcon.className = theme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill';
+        }
+    </script>
+
+</body>
+</html>
